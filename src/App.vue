@@ -3,26 +3,27 @@
  * @Author: Zengxs
  * @Date: 2021-04-16 15:08:49
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-16 15:35:50
+ * @LastEditTime: 2021-04-16 17:33:59
 -->
 <template>
   <div id="app">
-    
+    <router-view></router-view>
+    <main-tab-bar></main-tab-bar>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import MainTabBar from 'components/content/mainTabBar/MainTabBar.vue'
+
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    MainTabBar
   }
 }
 </script>
 
 <style>
-
+ @import 'assets/css/base.css';
 </style>
