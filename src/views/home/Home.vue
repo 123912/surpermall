@@ -3,20 +3,25 @@
  * @Author: Zengxs
  * @Date: 2021-04-16 17:10:37
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-20 00:23:41
+ * @LastEditTime: 2021-04-21 00:47:24
 -->
 <template>
   <div id="home" class="wrapper">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    
+    <tab-control  :titles="['流行', '新款', '精选']"
+        @tabClick = "tabClick" ref="tabControl1"  class="tab-control" v-show="isTabFixed"
+        ></tab-control>
 
     <scroll class="content" ref="scroll" :probe-type = "3" :pull-up-load="true"
-     @scroll="contentScroll" @pullingUp="loadMore">
-       <home-swiper :banners='banners'></home-swiper>
+     @scroll="contentScroll"   @pullingUp="loadMore">
+    
+       <home-swiper :banners='banners' @swiperImageLoad ="swiperImageLoad"></home-swiper>
         <recommend-view :recommends='recommends'></recommend-view>
         <feature-view></feature-view>
         
-        <tab-control class="tab-control" :titles="['流行', '新款', '精选']"
-        @tabClick = "tabClick"
+        <tab-control  :titles="['流行', '新款', '精选']"
+        @tabClick = "tabClick" ref="tabControl2" 
         ></tab-control>
         <goods-list :goods ="showGoods"></goods-list>
         
@@ -36,7 +41,7 @@ import GoodsList from 'components/content/goods/GoodsList.vue'
 import Scroll from 'components/common/scroll/Scroll.vue'
 import BackTop from 'components/content/backTop/BackTop.vue'
 
-
+import {debounce} from 'common/utils'
 
 
   export default {
@@ -61,13 +66,23 @@ import BackTop from 'components/content/backTop/BackTop.vue'
           'sell' : {page: 0, list: []},
         },
         currentType: 'pop',
-        isShowBackTop: false
+        isShowBackTop: false,
+        tabOffsetTop: 0,
+        isTabFixed: false,
+        saveY: 0
       }
     },
     computed: {
       showGoods() {
         return this.goods[this.currentType].list
       }
+    },
+    activated () {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0),
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.getScrollY()
     },
     created() {
       //请求多个数据
@@ -76,6 +91,7 @@ import BackTop from 'components/content/backTop/BackTop.vue'
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+      
     },
     methods: {
       // 事件监听的
@@ -91,6 +107,8 @@ import BackTop from 'components/content/backTop/BackTop.vue'
             this.currentType = 'sell'
             break    
         }
+        this.$refs.tabControl1.currentIndex = index,
+        this.$refs.tabControl2.currentIndex = index
       },
       // 网络请求的
       getHomeMultidata(){
@@ -105,6 +123,7 @@ import BackTop from 'components/content/backTop/BackTop.vue'
            console.log(res);
            this.goods[type].list.push(...res.data.data.list),
            this.goods[type].page  += 1
+           //完成加载更多
            this.$refs.scroll.finishPullUp()
       })  
        },
@@ -116,14 +135,35 @@ import BackTop from 'components/content/backTop/BackTop.vue'
        },
        //位置监听
        contentScroll(position) {
+         //判断tabBack是否显示
         //  console.log(position);
         this.isShowBackTop = Math.abs(position.y) > 1000
+
+        //判断tabControl是否吸顶（position:fixed）
+        this.isTabFixed = Math.abs(position.y) > this.tabOffsetTop
        },
        //加载更多
        loadMore() {
          console.log('456');
          this.getHomeGoods(this.currentType)
+       },
+        //获取tabControl的offsetTop
+       swiperImageLoad() {
+         this.tabOffsetTop= this.$refs.tabControl2.$el.offsetTop;
        }
+
+      
+    },
+    mounted() {
+      const refresh  = debounce(this.$refs.scroll.refresh)
+      //监听item的图片加载完成
+      this.$bus.$on("itemImageLoad", ()=> {
+        //  this.scroll && this.scroll.refresh(),
+        refresh()
+      })
+      
+      
+
     }
   }
 </script>
@@ -138,15 +178,15 @@ import BackTop from 'components/content/backTop/BackTop.vue'
     background-color: var(--color-tint);
     color: #fff;
 
-    position: fixed;
+    /* 原生滚动时需要 */
+    /* position: fixed;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 9;
+    z-index: 9; */
   }
   .tab-control {
-    position: sticky;
-    top: 44px;
+    position: relative;
     z-index: 9;
   }
   .content {

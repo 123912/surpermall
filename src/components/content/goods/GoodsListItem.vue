@@ -3,11 +3,11 @@
  * @Author: Zengxs
  * @Date: 2021-04-17 21:39:56
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-18 00:29:41
+ * @LastEditTime: 2021-04-21 01:00:22
 -->
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <img :src="goodsItem.show.img" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -32,7 +32,16 @@ name: 'GoodsListItem',
     }
   },
   computed: {},
-  methods: {},
+  methods: {
+    //vue自带监听图片加载
+    imageLoad() {
+      this.$bus.$emit('itemImageLoad')
+    },
+
+    itemClick() {
+      this.$router.push('/detail/' + this.goodsItem.iid)
+    }
+  },
   created() {},
   mounted() {}
 };

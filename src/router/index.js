@@ -3,7 +3,7 @@
  * @Author: Zengxs
  * @Date: 2021-04-16 15:08:49
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-16 16:01:23
+ * @LastEditTime: 2021-04-21 01:04:00
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -12,6 +12,7 @@ const Home = () => import('../views/home/Home')
 const Category = () => import('../views/category/Category')
 const Cart = () => import('../views/cart/Cart')
 const Profile = () => import('../views/profile/Profile')
+const Detail = () => import('../views/detail/Detail')
 
 Vue.use(VueRouter)
 
@@ -35,6 +36,10 @@ const routes = [
   {
     path: '/profile',
     component: Profile
+  },
+  {
+    path: '/detail/:iid',
+    component: Detail
   }
 ]
 

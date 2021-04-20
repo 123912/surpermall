@@ -3,7 +3,7 @@
  * @Author: Zengxs
  * @Date: 2021-04-18 21:44:47
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-20 00:20:14
+ * @LastEditTime: 2021-04-20 21:09:41
 -->
 <template>
   <div class="wrapper" ref="wrapper">
@@ -46,10 +46,18 @@ name: 'Scroll',
   computed: {},
   methods: {
     scrollTo (x, y, time=300) {
-      this.scroll.scrollTo(x, y, time)
+      this.scroll && this.scroll.scrollTo(x, y, time)
     },
     finishPullUp() {
-      this.scroll.finishPullUp()
+      this.scroll && this.scroll.finishPullUp()
+    },
+    refresh () {
+      console.log('123');
+       this.scroll && this.scroll.refresh()
+    },
+
+    getScrollY () {
+      return this.scroll ? this.scroll.y : 0
     }
   },
   created() {},
@@ -90,15 +98,21 @@ name: 'Scroll',
       //  disableTouch: false
     }) 
     //监听滚动的位置
-    this.scroll.on('scroll', (position) => {
-      this.$emit("scroll", position);
-    })  
+    if(this.probeType == 2 || this.probeType == 3){
+        this.scroll.on('scroll', (position) => {
+        this.$emit("scroll", position);
+      })  
+    }
+    
     //3.监听上啦事件
-    this.scroll.on("pullingUp", ()=> {
+    if(this.pullUpLoad) {
+      this.scroll.on("pullingUp", ()=> {
       console.log('123');
        this.$emit("pullingUp");
     })
-  },
+  }
+    }
+    
   
 };
 </script>
