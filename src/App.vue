@@ -3,11 +3,11 @@
  * @Author: Zengxs
  * @Date: 2021-04-16 15:08:49
  * @LastEditors: Zengxs
- * @LastEditTime: 2021-04-21 00:34:05
+ * @LastEditTime: 2021-04-22 00:52:42
 -->
 <template>
   <div id="app">
-    <keep-alive>
+    <keep-alive exclude="Detail">
       <router-view></router-view>
     </keep-alive>
     <main-tab-bar></main-tab-bar>
